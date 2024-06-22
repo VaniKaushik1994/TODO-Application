@@ -1,0 +1,5 @@
+.card, .card-content {
+    height: 82vh;
+    position: relative;
+    overflow-y: auto;
+}
