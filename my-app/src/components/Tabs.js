@@ -1,25 +1,47 @@
 import React from "react";
 import { Comment } from "./Comment";
 import { History } from "./History";
+import ReactQuill  from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import '../assets/css/Quill.css';
 
 export class Tabs extends React.Component{
     constructor(){
         super();
+        this.quillRef = React.createRef();; // Quill instance
+        this.reactQuillRef = React.createRef();; // ReactQuill component
         this.addComment = this.addComment.bind(this);
         this.resetComment = this.resetComment.bind(this);
         this.updateComment = this.updateComment.bind(this);
         this.deleteComment = this.deleteComment.bind(this);
+        this.newCommentOnState = this.newCommentOnState.bind(this);
+        this.state = {
+            comment: '',
+            modules: {
+                toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline','strike', 'blockquote'],
+                [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+                ['link', 'image'],
+                ['clean']
+                ],
+            },
+            formats: [
+                'header',
+                'bold', 'italic', 'underline', 'strike', 'blockquote',
+                'list', 'bullet', 'indent',
+                'link', 'image'
+            ]
+        }
     }
 
     addComment(){
-        const element = document.getElementById('comment_description')
-        this.props.addAComment(element.value);
-        element.value = '';
+        this.props.addAComment(this.state.comment);
+        this.setState({comment: ''});
     }
 
     resetComment(){
-        const element = document.getElementById('comment_description')
-        element.value = '';
+        this.setState({comment: ''});
     }
 
     updateComment(comment){
@@ -28,6 +50,32 @@ export class Tabs extends React.Component{
 
     deleteComment(id){
         this.props.deleteAComment(id);
+    }
+
+    newCommentOnState(){
+        if(this.reactQuillRef && this.reactQuillRef.current){
+            this.setState({comment: this.reactQuillRef.current.value});
+        }
+    }
+
+    componentDidMount() {
+        this.attachQuillRefs();
+      }
+    
+    componentDidUpdate() {
+        this.attachQuillRefs();
+    }
+
+    componentWillUnmount() {
+        const quill = this.quillRef.current?.quill; // Check for existence before cleanup
+        if (quill) {
+          quill.destroy(); // Clean up Quill instance
+        }
+      }
+
+    attachQuillRefs = () => {
+        if (typeof this.reactQuillRef?.getEditor !== 'function') return;
+            this.quillRef = this.reactQuillRef?.getEditor();
     }
 
     render(){
@@ -43,12 +91,12 @@ export class Tabs extends React.Component{
                 </div>
                 <div id="comments" className="col s12">
                     <div className="comment_btn col s12 ">
-                        <textarea
-                            name="comment"
-                            id="comment_description"
-                            className="materialize-textarea"
-                            placeholder="Enter your comments..."
-                        />
+                        <ReactQuill theme="snow"
+                            ref={this.reactQuillRef}
+                            modules={this.state.modules}
+                            formats={this.state.formats}
+                            value={this.state.comment}
+                            onChange={this.newCommentOnState}/>
                         <div className="btn_section right">
                             <i className="material-icons" onClick={this.addComment}>check</i>
                             <i className="material-icons" onClick={this.resetComment}>close</i>

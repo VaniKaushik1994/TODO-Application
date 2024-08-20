@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import M from 'materialize-css';
-import '../assets/css/List.css'
+import '../assets/css/List.css';
+import { connect } from 'react-redux';
+import { selectTodo } from '../store/Action';
 
-export class List extends React.Component{
+class List extends Component{
     constructor(){
         super();
         this.edit = this.edit.bind(this);
@@ -35,8 +37,18 @@ export class List extends React.Component{
         });
     }
 
+    
+    handleEdit = (todoId) => {
+        console.log(todoId);
+        if(todoId){
+            alert('ID EDIT CLICK:', todoId);
+            this.props.selectTodo(todoId);
+        }
+        // Navigate to edit page or perform other actions
+    };
+
     render(){
-        const { todos, message } = this.props;
+        const { todos, message } = this.props.dataFromListComponent;
         return (
             <div>
                 <table>
@@ -56,7 +68,7 @@ export class List extends React.Component{
                                 <td colSpan="5">{message}</td>
                             </tr>
                             : todos
-                                .map((todo, index) => 
+                                ?.map((todo, index) => 
                                     <tr key={index}>
                                         <td>{todo.title}</td>
                                         <td>{todo.description}</td>
@@ -71,9 +83,7 @@ export class List extends React.Component{
                                                     data-position='bottom'
                                                     data-todo={JSON.stringify(todo)}
                                                     data-index={index}
-                                                    // data-target={`edit_modal_${ index }`}
-                                                    // onClick={this.edit}
-
+                                                    onClick={() => this.handleEdit(todo.id)}
                                                 >
                                                     edit
                                                 </i> </Link>
@@ -92,3 +102,13 @@ export class List extends React.Component{
         );
     }
 }
+
+const mapStateToProps = state => ({
+    todos: state.todos // Assuming todos are in the state
+  });
+  
+const mapDispatchToProps = dispatch => ({
+selectTodo: todoId => dispatch(selectTodo(todoId))
+});
+  
+export default connect(mapStateToProps, mapDispatchToProps)(List);
