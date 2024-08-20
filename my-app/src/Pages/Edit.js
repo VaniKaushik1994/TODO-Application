@@ -99,7 +99,6 @@ class Edit extends React.Component{
     }
 
     resetDescription(){
-        console.log(this.state.original);
         this.setState({ todo: {...this.state.todo, description: this.state.original}});
     }
 

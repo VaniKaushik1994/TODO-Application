@@ -39,9 +39,7 @@ class List extends Component{
 
     
     handleEdit = (todoId) => {
-        console.log(todoId);
         if(todoId){
-            alert('ID EDIT CLICK:', todoId);
             this.props.selectTodo(todoId);
         }
         // Navigate to edit page or perform other actions
