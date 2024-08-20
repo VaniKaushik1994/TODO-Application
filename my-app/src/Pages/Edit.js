@@ -6,6 +6,9 @@ import { withRouter } from "react-router-dom";
 import { StatusSelect } from '../components/StatusSelect';
 import { PrioritySelect } from '../components/PrioritySelect';
 import { Tabs } from '../components/Tabs';
+import ReactQuill  from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import '../assets/css/Quill.css';
 
 class Edit extends React.Component{
     constructor(){
@@ -18,7 +21,24 @@ class Edit extends React.Component{
             descriptionEditable: false,
             title: '',
             histories: [],
+            modules: {
+                toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline','strike', 'blockquote'],
+                [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+                ['link', 'image'],
+                ['clean']
+                ],
+            },
+            formats: [
+                'header',
+                'bold', 'italic', 'underline', 'strike', 'blockquote',
+                'list', 'bullet', 'indent',
+                'link', 'image'
+            ],
         };
+        this.quillRef = React.createRef();; // Quill instance
+        this.reactQuillRef = React.createRef();; // ReactQuill component
         this.formChange = this.formChange.bind(this);
         this.updateComment = this.updateComment.bind(this);
         this.addComments = this.addComments.bind(this);
@@ -28,6 +48,7 @@ class Edit extends React.Component{
         this.makeTitleEditable = this.makeTitleEditable.bind(this);
         this.makeNonEditable = this.makeNonEditable.bind(this);
         this.changeCurrentTitle = this.changeCurrentTitle.bind(this);
+        this.resetDescription = this.resetDescription.bind(this);
     }
 
     componentDidMount(){
@@ -35,12 +56,26 @@ class Edit extends React.Component{
         M.updateTextFields();
         M.Tabs.init(document.querySelectorAll('.tabs'), {});
        this.getTodoDetails();
+       this.attachQuillRefs()
     }
 
     componentDidUpdate(){
         M.updateTextFields();
         M.FormSelect.init(document.querySelectorAll('select'), {});
         M.Tabs.init(document.querySelectorAll('.tabs'), {});
+        this.attachQuillRefs()
+    }
+
+    componentWillUnmount() {
+        const quill = this.quillRef.current?.quill; // Check for existence before cleanup
+        if (quill) {
+          quill.destroy(); // Clean up Quill instance
+        }
+      }
+
+    attachQuillRefs = () => {
+        if (typeof this.reactQuillRef?.getEditor !== 'function') return;
+            this.quillRef = this.reactQuillRef?.getEditor();
     }
 
     getTodoDetails(){
@@ -49,20 +84,22 @@ class Edit extends React.Component{
                 this.setState({
                     todo: response.data.todo,
                     comments: response.data.comments,
-                    histories: response.data.histories
-                })
+                    histories: response.data.histories,
+                    original: response.data.todo.description
+                });
             });
     }
 
     updateDescription(evt){
         const todo = {
             ...this.state.todo,
-            description: evt.target.value,
+            description: this.reactQuillRef.current.value
         }
         this.setState({ todo });
     }
 
     resetDescription(){
+        console.log(this.state.original);
         this.setState({ todo: {...this.state.todo, description: this.state.original}});
     }
 
@@ -174,13 +211,15 @@ class Edit extends React.Component{
                             }
                             <div className="row">
                                 <div className="input-field col s12">
-                                <textarea
+                                <ReactQuill theme="snow"
+                                    id="todo_description"
                                     name="description"
-                                    onChange={this.updateDescription}
-                                    id="todo_decription"
-                                    className="materialize-textarea"
-                                    value={todo.description} />
-                                <label htmlFor="todo_decription">Description*</label>
+                                    ref={this.reactQuillRef}
+                                    modules={this.state.modules}
+                                    formats={this.state.formats}
+                                    value={todo.description}
+                                    onChange={this.updateDescription}/>
+                                <label htmlFor="todo_description">Description*</label>
                                 </div>
                                 <div className="btn_section right">
                                 <i className="material-icons" onClick={this.updateTodo}>check</i>

@@ -3,10 +3,14 @@ import M from 'materialize-css';
 import axios from 'axios';
 import { StatusSelect } from '../components/StatusSelect';
 import { PrioritySelect } from '../components/PrioritySelect';
+import ReactQuill  from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import '../assets/css/Quill.css';
 
 export class TodoModal extends React.Component{
     constructor(props){
         super(props);
+        this.newCommentOnState = this.newCommentOnState.bind(this);
         this.state = {
             currentTodo: {},
             disabled: true,
@@ -16,6 +20,21 @@ export class TodoModal extends React.Component{
             priority: 'Low',
             status: (props.title === 'Add ToDo') ? 'New' : '',
             todoDate: new Date().toLocaleDateString(),
+            modules: {
+                toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline','strike', 'blockquote'],
+                [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+                ['link', 'image'],
+                ['clean']
+                ],
+            },
+            formats: [
+                'header',
+                'bold', 'italic', 'underline', 'strike', 'blockquote',
+                'list', 'bullet', 'indent',
+                'link', 'image'
+            ],
         };
         this.handleFormData = this.handleFormData.bind(this);
         this.submitForm = this.submitForm.bind(this);
@@ -23,18 +42,27 @@ export class TodoModal extends React.Component{
         this.addTodo = this.addTodo.bind(this);
         this.modalRef = React.createRef();
         this.editTodo = this.editTodo.bind(this);
+        this.quillRef = React.createRef();; // Quill instance
+        this.reactQuillRef = React.createRef();; // ReactQuill component
+    }
+
+    newCommentOnState(){
+        if(this.reactQuillRef && this.reactQuillRef.current){
+            this.setState({comment: this.reactQuillRef.current.value});
+        }
     }
 
     componentDidMount(){
         M.Modal.init(this.modalRef.current);
-        M.FormSelect.init(document.querySelectorAll('select'), {});
+        // M.FormSelect.init(document.querySelectorAll('select'), {});
         M.updateTextFields();
+        this.attachQuillRefs();
     }
 
     componentDidUpdate(prevProps){
         M.Modal.init(this.modal);
         M.updateTextFields();
-        M.FormSelect.init(document.querySelectorAll('select'), {});
+        // M.FormSelect.init(document.querySelectorAll('select'), {});
         if(prevProps.modalId !== this.props.modalId || this.props.modalId.includes('edit')){
             const modalInstance = M.Modal.getInstance(this.modalRef.current);
             modalInstance?.open();
@@ -43,6 +71,19 @@ export class TodoModal extends React.Component{
             this.setState({title: this.props.todo.title, description: this.props.todo.description,
                 priority: this.props.todo.priority, status: this.props.todo.status, date: this.props.date})
         }
+        this.attachQuillRefs();
+    }
+
+    componentWillUnmount() {
+        const quill = this.quillRef.current?.quill; // Check for existence before cleanup
+        if (quill) {
+          quill.destroy(); // Clean up Quill instance
+        }
+      }
+
+    attachQuillRefs = () => {
+        if (typeof this.reactQuillRef?.getEditor !== 'function') return;
+            this.quillRef = this.reactQuillRef?.getEditor();
     }
 
     handleFormData(data){
@@ -107,6 +148,12 @@ export class TodoModal extends React.Component{
     }
 
     formChange(evt){
+        if(evt.target.name === 'description'){
+            this.setState({[evt.target.name]: this.reactQuillRef.current.value}, () => {
+                this.submitForm();
+            });
+            return;
+        }
         this.setState({[evt.target.name]: evt.target.value.toString()}, () => {
             this.submitForm();
         });
@@ -142,14 +189,13 @@ export class TodoModal extends React.Component{
                                 <label htmlFor="todo_title">Title*</label>
                             </div>
                             <div className="input-field col s12">
-                                <textarea
-                                    id="todo_desc"
-                                    type="text"
+                                <ReactQuill theme="snow"
                                     name="description"
-                                    className="validate materialize-textarea"
-                                    onChange={this.formChange}
-                                    value={ this.state.description }
-                                />
+                                    ref={this.reactQuillRef}
+                                    modules={this.state.modules}
+                                    formats={this.state.formats}
+                                    value={this.state.description}
+                                    onChange={this.formChange}/>
                                 <label htmlFor="todo_desc">Description*</label>
                             </div>
                         </div>

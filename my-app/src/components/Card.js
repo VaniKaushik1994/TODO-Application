@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import M from "materialize-css";
 import '../assets/css/Card.css';
-import { List } from '../Pages/List';
+import ListComponent from '../Pages/ListShadow';
 import  Button  from "./Button";
 import { TodoModal } from "../modals/Todo";
 
@@ -48,6 +48,7 @@ export class Card extends React.Component{
         axios.get('http://localhost:3001/todos')
             .then(response => {
                 response = JSON.parse(response.data);
+                console.log(response);
                 if(response.message){
                     this.setState({message: response.message});
                 } else {
@@ -71,7 +72,7 @@ export class Card extends React.Component{
                             dataTarget="add_modal"
                             id="add_to_do"
                         />
-                        <List
+                        <ListComponent
                             todoToEdit={this.todoToEdit}
                             todos={this.state.todos}
                             message={this.state.message}

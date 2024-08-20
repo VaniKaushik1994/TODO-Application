@@ -1,4 +1,8 @@
 import React from "react";
+import ReactQuill  from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import DOMPurify from 'dompurify';
+import '../assets/css/Quill.css';
 
 export class Comment extends React.Component{
     constructor(){
@@ -10,8 +14,25 @@ export class Comment extends React.Component{
         this.deleteComment = this.deleteComment.bind(this);
         this.state = {
             editClicked: 0,
-            comment: ''
-        }
+            comment: '',
+            modules: {
+                toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline','strike', 'blockquote'],
+                [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+                ['link', 'image'],
+                ['clean']
+                ],
+            },
+            formats: [
+                'header',
+                'bold', 'italic', 'underline', 'strike', 'blockquote',
+                'list', 'bullet', 'indent',
+                'link', 'image'
+            ]
+        };
+        this.quillRef = React.createRef();; // Quill instance
+        this.reactQuillRef = React.createRef();; // ReactQuill component
     }
 
     deleteComment(){
@@ -25,8 +46,12 @@ export class Comment extends React.Component{
         this.setState({editClicked: 0, comment: this.props.comment.comment});
     }
 
-    newCommentOnState(evt){
-        this.setState({comment: evt.target.value});
+    newCommentOnState(){
+        console.log('new comment on state', this.reactQuillRef);
+        if(this.reactQuillRef && this.reactQuillRef.current){
+            this.setState({comment: this.reactQuillRef.current.value});
+            console.log(this.quillRef.current );
+        }
     }
 
     updateComment(){
@@ -34,7 +59,21 @@ export class Comment extends React.Component{
         this.setState({editClicked: 0});
     }
 
+    componentDidMount() {
+        this.attachQuillRefs();
+      }
+    
+    componentDidUpdate() {
+        this.attachQuillRefs();
+    }
+
+    attachQuillRefs = () => {
+    if (typeof this.reactQuillRef?.getEditor !== 'function') return;
+        this.quillRef = this.reactQuillRef?.getEditor();
+    };
+
     render(){
+        const sanitizedHtml = DOMPurify.sanitize(this.props.comment.comment);
         return(
         <div className="comment">
             <div className="comment-header">
@@ -46,23 +85,19 @@ export class Comment extends React.Component{
                 <div className="comment-body">
                     {this.state.editClicked ?
                         <div className="comment_btn col s12 ">
-                            <textarea
-                                name="comment"
-                                id="comment_description"
-                                className="materialize-textarea"
-                                placeholder="Enter your comments..."
+                            <ReactQuill theme="snow"
+                                ref={this.reactQuillRef}
+                                modules={this.state.modules}
+                                formats={this.state.formats}
                                 value={this.state.comment}
-                                onChange={this.newCommentOnState}
-                            />
+                                onChange={this.newCommentOnState}/>
                             <div className="btn_section right">
                                 <i className="material-icons" onClick={this.updateComment}>check</i>
                                 <i className="material-icons"onClick={this.resetComment}>close</i>
                             </div>
                         </div>
                         :
-                        <p className="comment-text">
-                            {this.props.comment.comment}
-                        </p> 
+                        <p className="comment-text" dangerouslySetInnerHTML={{ __html: sanitizedHtml }}></p> 
                     }
                 </div>
             <div className="comment-footer">
