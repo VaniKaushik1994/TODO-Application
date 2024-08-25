@@ -9,6 +9,7 @@ import { Tabs } from '../components/Tabs';
 import ReactQuill  from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import '../assets/css/Quill.css';
+import '../assets/css/Edit.css';
 
 class Edit extends React.Component{
     constructor(){
@@ -79,7 +80,9 @@ class Edit extends React.Component{
     }
 
     getTodoDetails(){
-        axios.get(`http://localhost:3001/todos/${ this.props.location.state.todo.id }`)
+        const id = this.props.location.state.todo.id
+        this.props.selectTodo(id)
+        axios.get(`http://localhost:3001/todos/${ id }`)
             .then((response) => {
                 this.setState({
                     todo: response.data.todo,
@@ -210,19 +213,19 @@ class Edit extends React.Component{
                             }
                             <div className="row">
                                 <div className="input-field col s12">
-                                <ReactQuill theme="snow"
+                                    <ReactQuill theme="snow"
                                     id="todo_description"
                                     name="description"
                                     ref={this.reactQuillRef}
                                     modules={this.state.modules}
                                     formats={this.state.formats}
                                     value={todo.description}
-                                    onChange={this.updateDescription}/>
-                                <label htmlFor="todo_description">Description*</label>
+                                    onChange={this.updateDescription}
+                                    onBlur={this.makeDescNonEditable}/>
                                 </div>
                                 <div className="btn_section right">
-                                <i className="material-icons" onClick={this.updateTodo}>check</i>
-                                <i className="material-icons"onClick={this.resetDescription}>close</i>
+                                <i className="material-icons edit-btn" onClick={this.updateTodo}>check</i>
+                                <i className="material-icons cancel-btn"onClick={this.resetDescription}>close</i>
                             </div>
                             </div>
                             <div className='row'>
@@ -244,6 +247,14 @@ class Edit extends React.Component{
                             <PrioritySelect
                                 formChange={ this.formChange }
                                 priority={todo.priority} />
+                            <div class="timeline">
+                                <p>
+                                    Created At: { new Date(todo.created_at).toLocaleString() }
+                                </p>
+                                <p>
+                                    Last Updated On: { new Date(todo.updated_at).toLocaleString() }
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>

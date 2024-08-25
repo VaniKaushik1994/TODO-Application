@@ -98,8 +98,8 @@ export class Tabs extends React.Component{
                             value={this.state.comment}
                             onChange={this.newCommentOnState}/>
                         <div className="btn_section right">
-                            <i className="material-icons" onClick={this.addComment}>check</i>
-                            <i className="material-icons" onClick={this.resetComment}>close</i>
+                            <i className="material-icons edit-btn" onClick={this.addComment}>check</i>
+                            <i className="material-icons cancel-btn" onClick={this.resetComment}>close</i>
                         </div>
                     </div>
                     <div className="comments_section">

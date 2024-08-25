@@ -73,6 +73,8 @@ class TODO{
         this.read({path}, ({err, data}) => {
             data = err ? [] : JSON.parse(data);
             todo.id = this.generateId({ lastIdCount: data.id_count });
+            todo.created_at = new Date().getTime();
+            todo.updated_at = new Date().getTime();
             data.todos.push(todo);
             this.updateHistory({
                 action: 'created',
@@ -106,6 +108,7 @@ class TODO{
                     return;
                 }
                 logger.success({msg: 'Todo updated successfully'});
+                todo.updated_at = new Date().getTime()
                 data.todos[index] = todo;
                 this.write({path, todos: data, action: 'update'}, callback);
             });

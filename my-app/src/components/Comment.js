@@ -3,6 +3,7 @@ import ReactQuill  from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import DOMPurify from 'dompurify';
 import '../assets/css/Quill.css';
+import '../assets/css/Comment.css';
 
 export class Comment extends React.Component{
     constructor(){
@@ -47,10 +48,8 @@ export class Comment extends React.Component{
     }
 
     newCommentOnState(){
-        console.log('new comment on state', this.reactQuillRef);
         if(this.reactQuillRef && this.reactQuillRef.current){
             this.setState({comment: this.reactQuillRef.current.value});
-            console.log(this.quillRef.current );
         }
     }
 
@@ -92,19 +91,21 @@ export class Comment extends React.Component{
                                 value={this.state.comment}
                                 onChange={this.newCommentOnState}/>
                             <div className="btn_section right">
-                                <i className="material-icons" onClick={this.updateComment}>check</i>
-                                <i className="material-icons"onClick={this.resetComment}>close</i>
+                                <i className="material-icons edit-btn" onClick={this.updateComment}>check</i>
+                                <i className="material-icons cancel-btn"onClick={this.resetComment}>close</i>
                             </div>
                         </div>
                         :
                         <p className="comment-text" dangerouslySetInnerHTML={{ __html: sanitizedHtml }}></p> 
                     }
                 </div>
-            <div className="comment-footer">
+            {!this.state.editClicked 
+            ? <div className="comment-footer">
                 <span className="updated-date">{new Date(this.props.comment.updated_at).toLocaleString()}</span>
                 <button className="btn-flat edit-btn" onClick={this.editComment}>Edit</button>
                 <button className="btn-flat delete-btn" onClick={this.deleteComment}>Delete</button>
             </div>
+            : ''}
         </div>
         )
     }

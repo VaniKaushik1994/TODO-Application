@@ -15,6 +15,7 @@ class List extends Component{
 
     componentDidMount(){
         M.Tooltip.init(document.querySelectorAll('.tooltipped'), {});
+        this.props.selectTodo(null)
     }
 
     edit(evt){
@@ -31,7 +32,7 @@ class List extends Component{
             if(response.message){
                 M.toast({html: response.data.message});
             } else {
-                this.props.updatedTodos(response.data.todos.todos);
+                this.props.dataFromListComponent.updatedTodos(response.data.todos.todos);
                 M.toast({html: 'TODO Delete Successfully!!'});
             }
         });
@@ -53,10 +54,8 @@ class List extends Component{
                     <thead>
                         <tr>
                             <th>Title</th>
-                            <th>Description</th>
                             <th>Status</th>
                             <th>Priority</th>
-                            <th>Date</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -69,10 +68,8 @@ class List extends Component{
                                 ?.map((todo, index) => 
                                     <tr key={index}>
                                         <td>{todo.title}</td>
-                                        <td>{todo.description}</td>
                                         <td>{todo.status}</td>
                                         <td>{todo.priority}</td>
-                                        <td>{new Date(todo.date).toLocaleDateString()}</td>
                                         <td className='actions'>
                                                 <Link to={{ pathname: `/edit/${todo.id}`, state: { todo }}} >
                                                 <i
@@ -85,11 +82,11 @@ class List extends Component{
                                                 >
                                                     edit
                                                 </i> </Link>
-                                            <i
+                                            {/* <i
                                                 className='material-icons'
                                                 onClick={this.delete}
                                                 data-index={index}
-                                            >delete</i>
+                                            >delete</i> */}
                                         </td>
                                     </tr>
                                 )
@@ -102,7 +99,7 @@ class List extends Component{
 }
 
 const mapStateToProps = state => ({
-    todos: state.todos // Assuming todos are in the state
+    selectedTodoId: state.selectedTodoId // Assuming todos are in the state
   });
   
 const mapDispatchToProps = dispatch => ({

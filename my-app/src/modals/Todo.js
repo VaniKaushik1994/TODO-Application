@@ -148,8 +148,8 @@ export class TodoModal extends React.Component{
     }
 
     formChange(evt){
-        if(evt.target.name === 'description'){
-            this.setState({[evt.target.name]: this.reactQuillRef.current.value}, () => {
+        if(!evt.target){
+            this.setState({description: this.reactQuillRef.current.value}, () => {
                 this.submitForm();
             });
             return;
@@ -173,7 +173,7 @@ export class TodoModal extends React.Component{
                 <h4 className="modal-title">
                     {formTitle}
                 </h4>
-                <div className="modal-content row">
+                <div className="modal-content modal-content-scrollable row">
                     <form className="col s12">
                         <div className="row">
                             <div className="input-field col s12">
