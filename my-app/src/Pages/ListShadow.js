@@ -12,7 +12,6 @@ export class ListComponent extends React.Component {
     }
 
     render(){
-        console.log(this.props)
         return (
             <div>
               <ConnectedList
@@ -26,8 +25,8 @@ export class ListComponent extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
-  // Map relevant state to props
+const mapStateToProps = (state) => ({
+  selectedTodoId: state.selectedTodoId // Replace with your actual state path
 });
 
 const ConnectedList = connect(mapStateToProps)(List);

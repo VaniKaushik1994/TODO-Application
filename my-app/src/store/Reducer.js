@@ -4,7 +4,6 @@ const initialState = {
 };
 
 const todoReducer = (state = initialState, action) => {
-  console.log('Reducer: ', action);
   switch (action.type) {
     case 'SELECT_TODO':
       return { ...state, selectedTodoId: action.payload };

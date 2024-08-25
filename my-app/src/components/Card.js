@@ -48,7 +48,6 @@ export class Card extends React.Component{
         axios.get('http://localhost:3001/todos')
             .then(response => {
                 response = JSON.parse(response.data);
-                console.log(response);
                 if(response.message){
                     this.setState({message: response.message});
                 } else {
