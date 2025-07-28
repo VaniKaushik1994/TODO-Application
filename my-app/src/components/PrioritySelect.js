@@ -1,6 +1,13 @@
 import React from "react";
 
 export class PrioritySelect extends React.Component{
+    componentDidMount() {
+        // If you're using Materialize CSS, initialize the select
+        if (window.M && window.M.FormSelect) {
+            window.M.FormSelect.init(document.querySelectorAll('select'));
+        }
+    }
+    
     render(){
         return(
             <div className="row">
@@ -9,7 +16,7 @@ export class PrioritySelect extends React.Component{
                         name="priority"
                         onChange={this.props.formChange}
                         id="priority_to_do"
-                        value={ this.props.priority }
+                        value={ this.props.isEdit ? this.props.priority : 'Medium' }
                     >
                         <option value="" disabled>Choose your option</option>
                         <option value="Critical">Critical</option>
@@ -17,7 +24,7 @@ export class PrioritySelect extends React.Component{
                         <option value="Medium">Medium</option>
                         <option value="Low">Low</option>
                     </select>
-                    <label>Priority</label>
+                    <label htmlFor="priority_to_do">Priority</label>
                 </div>
             </div>
         )

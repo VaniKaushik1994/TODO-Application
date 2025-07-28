@@ -6,6 +6,7 @@ import { PrioritySelect } from '../components/PrioritySelect';
 import ReactQuill  from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import '../assets/css/Quill.css';
+import '../assets/css/TodoModal.css';
 
 export class TodoModal extends React.Component{
     constructor(props){
@@ -170,15 +171,22 @@ export class TodoModal extends React.Component{
                 ref={this.modalRef}
                 id={this.props.modalId}
                 className="modal modal-fixed-footer">
-                <h4 className="modal-title">
-                    {formTitle}
-                </h4>
+                <div className="modal-title title">
+                    <span>{formTitle}</span>
+                    <i
+                        className='material-icons tooltipped modal-close right close-icon'
+                        data-tooltip='Close'
+                        data-position='bottom'
+                    >
+                        close
+                    </i>
+                </div>
                 <div className="modal-content modal-content-scrollable row">
                     <form className="col s12">
                         <div className="row">
                             <div className="input-field col s12">
                                 <input
-                                    placeholder="Title"
+                                    placeholder="Enter Title..."
                                     id="todo_title"
                                     name="title"
                                     type="text"
@@ -188,6 +196,9 @@ export class TodoModal extends React.Component{
                                 />
                                 <label htmlFor="todo_title">Title*</label>
                             </div>
+                            <div className='input-field col s12'>
+                                <label htmlFor="todo_desc">Description*</label>
+                            </div>
                             <div className="input-field col s12">
                                 <ReactQuill theme="snow"
                                     name="description"
@@ -195,12 +206,12 @@ export class TodoModal extends React.Component{
                                     modules={this.state.modules}
                                     formats={this.state.formats}
                                     value={this.state.description}
-                                    onChange={this.formChange}/>
-                                <label htmlFor="todo_desc">Description*</label>
+                                    onChange={this.formChange}
+                                    />
                             </div>
                         </div>
                         <StatusSelect isEdit={isEdit} status={this.state.status} formChange={this.formChange} />
-                        <PrioritySelect formChange={this.formChange} priority={this.state.priority} />
+                        <PrioritySelect isEdit={isEdit} formChange={this.formChange} priority={this.state.priority} />
                     </form>
                 </div>
                 <div className="modal-footer">
@@ -209,10 +220,7 @@ export class TodoModal extends React.Component{
                     className={classDetails}
                     onClick={!isEdit ? this.addTodo : this.editTodo} >
                     {!isEdit ? 'Add' : 'Edit'}
-                </a> <a
-                    href="#!"
-                    className="modal-close waves-effect waves-green btn-flat"
-                    >Close</a>
+                </a>
                 </div>
             </div>
         );

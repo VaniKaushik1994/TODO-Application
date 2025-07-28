@@ -23,19 +23,19 @@ class Header extends React.Component{
             <div className="navbar-fixed">
                 <nav>
                     <div className="nav-wrapper row">
-                        <div class="col s4">
+                        <div className="col s4">
                             {this.state.id
                             ? <Link to={{ pathname: `/`}} >
                                     <i className="material-icons left" id="back_btn">home</i>
                                 </Link>
                             : ''}
                         </div>
-                        <div class=" col s6">
+                        <div className=" col s6">
                             <span className="brand-logo center">
                                 To Do Application
                             </span>
                         </div>
-                        <div class="float-right">
+                        <div className="float-right">
                             <i className="material-icons right" id="profile-btn">account_circle</i>
                         </div>
                     </div>

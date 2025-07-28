@@ -247,7 +247,7 @@ class Edit extends React.Component{
                             <PrioritySelect
                                 formChange={ this.formChange }
                                 priority={todo.priority} />
-                            <div class="timeline">
+                            <div className="timeline">
                                 <p>
                                     Created At: { new Date(todo.created_at).toLocaleString() }
                                 </p>

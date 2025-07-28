@@ -1,6 +1,13 @@
-import React from 'react';;
+import React from 'react';
 
 export class StatusSelect extends React.Component{
+    componentDidMount() {
+        // If you're using Materialize CSS, initialize the select
+        if (window.M && window.M.FormSelect) {
+            window.M.FormSelect.init(document.querySelectorAll('select'));
+        }
+    }
+
     render(){
         return(
             <div style={this.props.isEdit ? {} : {display:'none'}} className="row">
