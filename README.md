@@ -4,6 +4,12 @@ The Todo application is created from scratch using React JS as front end Framewo
 #Set-up:
 npm i or npm install
 
+#Front-End Application Run
+npm run start
+
+#Back-End Application
+node index.js
+
 under my-app create a folder bucket
 
 
