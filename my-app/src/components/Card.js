@@ -5,7 +5,6 @@ import '../assets/css/Card.css';
 import ListComponent from '../Pages/ListShadow';
 import  Button  from "./Button";
 import { TodoModal } from "../modals/Todo";
-import { Link } from 'react-router-dom';
 
 export class Card extends React.Component{
     constructor(props) {
